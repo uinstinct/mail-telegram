@@ -6,3 +6,7 @@ node_modules
 
 **/credentials.json
 **/token.json
+**/gmail_token.ts
+**/.env.local
+# this may be removed/not removed depending on github actions deployments
+**/convex/_generated

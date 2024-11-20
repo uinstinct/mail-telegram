@@ -7,7 +7,8 @@
     "generate-credentials": "yarn workspace gmail-credentials start"
   },
   "workspaces": [
-    "gmail-credentials"
+    "gmail-credentials",
+    "mail-telegram-core"
   ],
   "dependencies": {
     "typescript": "^5.6.3"
