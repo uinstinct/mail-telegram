@@ -1,4 +1,11 @@
 {
   "name": "mail-telegram",
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.1",
+  "scripts": {
+    "start": "node script.js"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "googleapis": "^144.0.0"
+  }
 }

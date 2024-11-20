@@ -1,0 +1,7 @@
+node_modules
+.yarn
+**/.pnp.cjs
+.DS_Store
+
+**/credentials.json
+**/token.json
