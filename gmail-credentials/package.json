@@ -1,0 +1,17 @@
+{
+  "name": "gmail-credentials",
+  "packageManager": "yarn@4.5.1",
+  "scripts": {
+    "start": "tsx generate-credentials.ts",
+    "start2": "node script.js"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "google-auth-library": "^9.15.0",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.1",
+    "tsx": "^4.19.2"
+  }
+}

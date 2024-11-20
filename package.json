@@ -1,11 +1,15 @@
 {
   "name": "mail-telegram",
   "packageManager": "yarn@4.5.1",
+  "private": true,
   "scripts": {
-    "start": "node script.js"
+    "vscode": "yarn dlx @yarnpkg/sdks vscode",
+    "generate-credentials": "yarn workspace gmail-credentials start"
   },
+  "workspaces": [
+    "gmail-credentials"
+  ],
   "dependencies": {
-    "@google-cloud/local-auth": "^3.0.1",
-    "googleapis": "^144.0.0"
+    "typescript": "^5.6.3"
   }
 }
