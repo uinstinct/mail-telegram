@@ -10,7 +10,8 @@
     "convex": "^1.17.0",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.15.0",
-    "googleapis": "^144.0.0"
+    "googleapis": "^144.0.0",
+    "grammy": "^1.32.0"
   },
   "devDependencies": {
     "@types/node": "^22.9.1"

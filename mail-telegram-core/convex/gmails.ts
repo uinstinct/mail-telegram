@@ -7,7 +7,7 @@ import path from "path";
 import { google, gmail_v1 } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 import { internal } from "./_generated/api";
-import gmailTokenCreds from './gmail_token'
+import {gmailTokenCreds} from '../secrets'
 
 const getGmailService = async () => {
     const gmailClient = google.auth.fromJSON(gmailTokenCreds) as OAuth2Client;

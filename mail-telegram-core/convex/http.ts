@@ -1,5 +1,5 @@
 import { httpRouter } from "convex/server";
-import { getMessage } from "./telegram";
+import { getMessage, receiveMessage } from "./telegram";
 
 const http = httpRouter();
 
@@ -8,5 +8,11 @@ http.route({
   method: "GET",
   handler: getMessage,
 });
+
+http.route({
+  path: '/telegram',
+  method: 'POST',
+  handler: receiveMessage
+})
 
 export default http;
