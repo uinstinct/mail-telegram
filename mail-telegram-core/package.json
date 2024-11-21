@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "convex": "convex",
-    "tsx": "tsx"
+    "dev": "convex dev",
+    "tsx": "tsx",
+    "set-bot-commands": "tsx set-bot-commands.ts"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

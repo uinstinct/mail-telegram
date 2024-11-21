@@ -1,20 +1,13 @@
 "use node";
 
-import {
-  action,
-  httpAction,
-  internalAction,
-  internalMutation,
-} from "../_generated/server";
-import { authenticate } from "@google-cloud/local-auth";
-import fs from "fs";
-import path from "path";
-import { google, gmail_v1 } from "googleapis";
-import { OAuth2Client } from "google-auth-library";
-import { internal } from "../_generated/api";
-import { gmailTokenCreds } from "../../secrets";
 import { v } from "convex/values";
-import { timeStamp } from "console";
+import { OAuth2Client } from "google-auth-library";
+import { gmail_v1, google } from "googleapis";
+import { gmailTokenCreds } from "../../secrets";
+import { internal } from "../_generated/api";
+import {
+  internalAction
+} from "../_generated/server";
 
 const getGmailService = async () => {
   const gmailClient = google.auth.fromJSON(gmailTokenCreds) as OAuth2Client;
@@ -60,7 +53,10 @@ const extractEssentialFieldsFromMessage = async (
 };
 
 export const fetchGmails = internalAction({
-  handler: async (ctx) => {
+  args: {
+    sendToTelegram: v.optional(v.boolean()),
+  },
+  handler: async (ctx, {sendToTelegram}) => {
     const gmailService = await getGmailService();
     const latestTimestamp = await ctx.runQuery(
       internal.gmail.queries.getLatestTimestamp
@@ -106,5 +102,9 @@ export const fetchGmails = internalAction({
         });
       })
     );
+
+    if(sendToTelegram) {
+      await ctx.scheduler.runAfter(0, internal.telegram.sendMailsInMessages)
+    }
   },
 });
