@@ -47,7 +47,7 @@ export const sendMailsInMessages = internalAction(async (ctx) => {
   // query all the records in the mails table
   await Promise.all(
     mails.map(async (mail) => {
-      await telegramBot.sendMessage(telegramSecrets.userId, mail.messageId);
+      await telegramBot.sendMessage(telegramSecrets.userId, mail.hash);
       await ctx.runMutation(internal.gmail.mutations.markMessageAsSent, {
         id: mail._id,
       });
@@ -67,9 +67,7 @@ const handleBotCommands = async (
       telegramSecrets.userId,
       "Fetching new mails in progress..."
     );
-    await ctx.scheduler.runAfter(0, internal.gmail.actions.fetchGmails, {
-      sendToTelegram: true,
-    });
+    await ctx.scheduler.runAfter(0, internal.gmail.actions.fetchGmails);
   } else if (command === "/quickfetch") {
     await ctx.scheduler.runAfter(0, internal.telegram.sendMailsInMessages);
   }

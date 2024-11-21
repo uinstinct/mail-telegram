@@ -5,6 +5,7 @@
   "scripts": {
     "convex": "convex",
     "dev": "convex dev",
+    "deploy": "convex deploy",
     "tsx": "tsx",
     "set-bot-commands": "tsx set-bot-commands.ts"
   },

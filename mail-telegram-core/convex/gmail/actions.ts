@@ -53,10 +53,7 @@ const extractEssentialFieldsFromMessage = async (
 };
 
 export const fetchGmails = internalAction({
-  args: {
-    sendToTelegram: v.optional(v.boolean()),
-  },
-  handler: async (ctx, {sendToTelegram}) => {
+  handler: async (ctx, ) => {
     const gmailService = await getGmailService();
     const latestTimestamp = await ctx.runQuery(
       internal.gmail.queries.getLatestTimestamp
@@ -103,8 +100,6 @@ export const fetchGmails = internalAction({
       })
     );
 
-    if(sendToTelegram) {
-      await ctx.scheduler.runAfter(0, internal.telegram.sendMailsInMessages)
-    }
+    await ctx.scheduler.runAfter(0, internal.telegram.sendMailsInMessages)
   },
 });
