@@ -39,7 +39,8 @@ export const sendMailsInMessages = internalAction(async (ctx) => {
   if (mails.length === 0) {
     await telegramBot.sendMessage(
       telegramSecrets.userId,
-      "No new mails found!"
+      "No new mails found!",
+      {disable_notification: true}
     );
     return;
   }
