@@ -10,3 +10,5 @@ node_modules
 **/.env.local
 # this may be removed/not removed depending on github actions deployments
 **/convex/_generated
+
+target/
