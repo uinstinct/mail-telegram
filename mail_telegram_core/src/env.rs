@@ -3,10 +3,10 @@ pub struct EnvVars {}
 
 impl EnvVars {
     fn check_all_variables() -> Result<(), Box<dyn std::error::Error>> {
-        std::env::var("DATABASE_URL")?;
-        std::env::var("TELEGRAM_BOT_TOKEN")?;
-        std::env::var("TELEGRAM_MY_CHAT_ID")?;
-        std::env::var("GMAIL_TOKEN_JSON")?;
+        std::env::var("DATABASE_URL").or_else(|_| Err("DATABASE_URL is not set"))?;
+        std::env::var("TELEGRAM_BOT_TOKEN").or_else(|_| Err("TELEGRAM_BOT_TOKEN is not set"))?;
+        std::env::var("TELEGRAM_MY_CHAT_ID").or_else(|_| Err("TELEGRAM_MY_CHAT_ID is not set"))?;
+        std::env::var("GMAIL_TOKEN_JSON").or_else(|_| Err("GMAIL_TOKEN_JSON is not set"))?;
         Ok(())
     }
     
