@@ -1,4 +1,3 @@
-use dotenvy;
 
 pub struct EnvVars {}
 

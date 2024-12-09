@@ -143,10 +143,10 @@ pub async fn extract_and_store_mail_data(
         .map(|m| m.unwrap().1);
 
     let extracted_messages_data = fetched_messages
-        .map(|m| extract_gmail_message_data(m))
+        .map(extract_gmail_message_data)
         .collect::<Vec<_>>();
 
-    if extracted_messages_data.len() == 0 {
+    if extracted_messages_data.is_empty() {
         println!("no new messages");
         return Ok(());
     }

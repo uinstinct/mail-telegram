@@ -1,8 +1,6 @@
-use hyper::client::connect;
 use sea_orm::prelude::Expr;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, ConnectionTrait, Database, DatabaseConnection,
-    DbBackend, DbErr, EntityTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
+    ActiveValue, ColumnTrait, Database, DatabaseConnection, DbErr, EntityTrait, QueryFilter, QueryOrder, QuerySelect,
 };
 use sea_orm_migration::MigratorTrait;
 
@@ -26,8 +24,6 @@ pub async fn migrations_down() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// production
-
 pub type Mail = mails::Model;
 
 pub struct NewMail {
@@ -50,16 +46,6 @@ impl MailsDB {
         Self { db }
     }
 
-    pub async fn check_existing_mail(&self, mid: &String) -> Option<Mail> {
-        let found_mail = mails::Entity::find()
-            .filter(mails::Column::MessageId.eq(mid))
-            .one(&self.db)
-            .await
-            .unwrap_or(None);
-
-        found_mail
-    }
-
     pub async fn find_mails_by_message_ids(
         &self,
         message_ids: impl Iterator<Item = String>,
@@ -78,8 +64,7 @@ impl MailsDB {
             .order_by_desc(mails::Column::Timestamp)
             .one(&self.db)
             .await
-            .unwrap_or(None)
-            .and_then(|m| Some(m.timestamp))
+            .unwrap_or(None).map(|m| m.timestamp)
     }
 
     pub async fn fetch_unsent_mails(&self) -> Result<Vec<Mail>, Box<dyn std::error::Error>> {
