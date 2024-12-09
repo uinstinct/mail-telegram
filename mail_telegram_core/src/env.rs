@@ -11,6 +11,7 @@ impl EnvVars {
     }
     
     pub fn load_all_variables() -> Result<(), Box<dyn std::error::Error>> {
+        // as to avoid writing all these variables in github workflow file, add a way to extract all these variables from a json string and fallback to extracting them manually if not all the variables are present in that json
         EnvVars::check_all_variables().unwrap_or_else(|_| {
             dotenvy::dotenv().ok();
         });
