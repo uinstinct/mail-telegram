@@ -5,62 +5,12 @@ use sea_orm::{
     DbBackend, DbErr, EntityTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
 };
 use sea_orm_migration::MigratorTrait;
-use warp::redirect::found;
 
 use crate::entities::mails;
 use crate::env::EnvVars;
 use crate::migrator::Migrator;
 
-pub async fn check_postgres() -> Result<(), DbErr> {
-    let db = Database::connect(EnvVars::database_url()).await?;
-
-    let sample_mail = mails::ActiveModel {
-        from: ActiveValue::set("abc@gmail.com".to_string()),
-        message_id: ActiveValue::set("some-message-123-id".to_string()),
-        timestamp: ActiveValue::set("2022-01-01 00:00:00".to_string()),
-        subject: ActiveValue::set("sample subject".to_string()),
-        ..Default::default()
-    };
-
-    let m = sample_mail.insert(&db).await?;
-
-    println!("inserted mail with id {}", m.id);
-
-    Ok(())
-}
-
-pub async fn check_existing_mail(mid: &String) -> bool {
-    let db = Database::connect(EnvVars::database_url()).await.expect("connection not found");
-
-    let found_mail = mails::Entity::find()
-        .filter(mails::Column::MessageId.eq(mid))
-        .one(&db)
-        .await
-        .unwrap_or(None);
-
-    if let Some(_) = found_mail {
-        return true;
-    }
-
-    false
-}
-
-pub async fn store_new_mail(new_mail: NewMail) -> Result<(), Box<dyn std::error::Error>> {
-    let db = Database::connect(EnvVars::database_url()).await.expect("connection not found");
-
-    let inserting_mail = mails::ActiveModel {
-        from: ActiveValue::Set(new_mail.from),
-        message_id: ActiveValue::Set(new_mail.message_id),
-        timestamp: ActiveValue::Set(new_mail.timestamp),
-        subject: ActiveValue::Set(new_mail.subject),
-        ..Default::default()
-    };
-
-    let _ = inserting_mail.insert(&db).await?;
-
-    Ok(())
-}
-
+#[allow(dead_code)]
 pub async fn migrations_up() -> Result<(), Box<dyn std::error::Error>> {
     println!("upgrading migrations...");
     let db = Database::connect(EnvVars::database_url()).await?;
@@ -68,6 +18,7 @@ pub async fn migrations_up() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub async fn migrations_down() -> Result<(), Box<dyn std::error::Error>> {
     println!("downgrading migrations...");
     let db = Database::connect(EnvVars::database_url()).await?;
