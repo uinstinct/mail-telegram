@@ -1,0 +1,13 @@
+name: Send Mails to Telegram
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  send:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo run
