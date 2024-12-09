@@ -1,22 +1,32 @@
+use db::{check_existing_mail, store_new_mail, NewMail};
+use entities::mails;
+use env::EnvVars;
 use google_gmail1::hyper::{self};
 use google_gmail1::oauth2::{read_authorized_user_secret, AuthorizedUserAuthenticator};
 use google_gmail1::{api, Gmail};
 
 use headless_chrome::protocol::cdp::Page;
 use headless_chrome::Browser;
-use html5ever::driver::ParseOpts;
-use html5ever::tendril::TendrilSink;
-use html5ever::tree_builder::TreeBuilderOpts;
-use html5ever::{parse_document, serialize};
-use markup5ever_rcdom::{RcDom, SerializableHandle};
+use teloxide::prelude::Requester;
+use teloxide::types::{ChatId, InputFile};
 use std::error::Error;
-use std::sync::{Arc, Mutex};
+use std::io;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio::sync::oneshot;
-use warp::Filter;
+
+
+use teloxide::Bot;
 
 use rand::{distributions::Alphanumeric, Rng};
+
+mod db;
+mod migrator;
+mod entities;
+mod gmail;
+mod pdf;
+mod telegram;
+mod env;
 
 fn get_random_string() -> String {
     // Length of the random string
@@ -59,12 +69,28 @@ fn get_html_data(msg: api::Message) -> Option<Vec<u8>> {
 }
 
 async fn extract_message_data(msg: api::Message) -> Result<(), Box<dyn Error>> {
-    if let Some(encoded_html_data) = get_html_data(msg) {
-        let html = std::str::from_utf8(&encoded_html_data).expect("invalid utf-8 format html data");
-        std::fs::write("index.html", html)?;
-        spin_up_html_page().await?;
-    }
+    // if let Some(encoded_html_data) = get_html_data(msg.clone()) {
+    //     let html = std::str::from_utf8(&encoded_html_data).expect("invalid utf-8 format html data");
+    //     std::fs::write("index.html", html)?;
+    //     spin_up_html_page().await?;
+    // }
 
+    let extract_header = |header_name: &str| -> String {
+        msg.payload
+            .as_ref()
+            .and_then(|payload| payload.headers.as_ref())
+            .and_then(|headers| headers.iter().find(|h| h.name.as_deref() == Some(header_name)))
+            .and_then(|header| header.value.clone())
+            .unwrap_or_default()
+    };
+
+    store_new_mail(NewMail {
+        from: extract_header("From"),
+        message_id: msg.id.unwrap(),
+        timestamp: msg.internal_date.unwrap().to_string(),
+        subject: msg.payload.unwrap().headers.unwrap().iter().find(|h| h.name == Some(String::from("Subject"))).unwrap().value.clone().unwrap(),
+    }).await?;
+    
     Ok(())
 }
 
@@ -155,28 +181,38 @@ fn print_pdf() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let hub = get_gmail_client().await?;
+async fn send_to_telegram() -> io::Result<()> {
+    let current_dir = std::env::current_dir()?;
+    println!("Current directory: {:?}", current_dir);
 
-    let result = hub
-        .users()
-        .messages_list("me")
-        .q("is:unread")
-        .max_results(500)
-        .doit()
-        .await?;
-
-    let messages = result.1.messages.unwrap_or_default();
-
-    for (index, message) in messages.into_iter().enumerate() {
-        let msg_id = message.id.unwrap();
-        let msg = hub.users().messages_get("me", &msg_id).doit().await?;
-
-        extract_message_data(msg.1).await?;
-
-        break;
+    println!("PDF files in the current directory:");
+    let pdf_files: Vec<_> = std::fs::read_dir(&current_dir)?
+        .filter_map(Result::ok) // Ignore errors
+        .map(|entry| entry.path()) // Extract paths
+        .filter(|path| path.extension().map_or(false, |ext| ext == "pdf")) // Filter PDFs
+        .collect();
+    
+    let bot = Bot::new(EnvVars::telegram_bot_url());
+    for pdf_file in pdf_files {
+        println!("Sending PDF file: {}", pdf_file.display());
+        let input_file = InputFile::file(pdf_file);
+        bot.send_document(ChatId(EnvVars::telegram_my_chat_id()), input_file).await.expect("could not send the telegram message");
     }
 
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    EnvVars::load_all_variables()?;
+
+    let db = db::get_new_connection().await?;
+    let gmail_client = gmail::get_gmail_client().await?;
+
+    let messages = gmail::fetch_messages_from_gmail(&db, &gmail_client).await?;
+    gmail::extract_and_store_mail_data(&db, &gmail_client, messages).await?;
+
+    telegram::send_mails_in_telegram(&db).await?;
+    
     Ok(())
 }
