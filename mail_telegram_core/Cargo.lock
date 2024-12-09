@@ -1902,7 +1902,6 @@ dependencies = [
 name = "mail_telegram_core"
 version = "0.1.0"
 dependencies = [
- "base64 0.22.1",
  "dotenvy",
  "futures",
  "google-gmail1",
@@ -1913,7 +1912,6 @@ dependencies = [
  "sea-orm",
  "sea-orm-migration",
  "serde",
- "serde_json",
  "teloxide",
  "tokio",
  "warp",

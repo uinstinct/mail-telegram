@@ -6,7 +6,11 @@ on:
 jobs:
   send:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./mail_telegram_core
     steps:
       - uses: actions/checkout@v4
+      - uses: browser-actions/setup-chrome@v1
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo run
