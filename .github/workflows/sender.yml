@@ -8,6 +8,7 @@ on:
     
 jobs:
   send:
+    environment: my-deployment
     runs-on: ubuntu-latest
     defaults:
       run:
