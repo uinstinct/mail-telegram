@@ -2,6 +2,9 @@ name: Send Mails to Telegram
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
     
 jobs:
   send:
