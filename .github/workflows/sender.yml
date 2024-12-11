@@ -14,18 +14,20 @@ jobs:
         working-directory: ./mail_telegram_core
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      tele_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_MY_CHAT_ID: ${{ secrets.TELEGRAM_MY_CHAT_ID }}
       GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+      SAMPLE: ${{ vars.SAMPLE }}
     steps:
       - uses: actions/checkout@v4
-      - uses: browser-actions/setup-chrome@v1
       - run: echo ${#ABC}
         env:
           ABC: ${{ secrets.DATABASE_URL }}
+      - run: echo ${#SAMPLE}
       - run: echo ${#JAKE}
         env:
           JAKE: ${{ secrets.GITHUB_TOKEN }}
-      - run: echo ${#TELEGRAM_BOT_TOKEN}
+      - run: echo ${#tele_token}
+      - uses: browser-actions/setup-chrome@v1
       - uses: dtolnay/rust-toolchain@stable
       - run: RUST_BACKTRACE=1 cargo run
