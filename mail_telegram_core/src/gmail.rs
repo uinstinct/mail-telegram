@@ -13,7 +13,9 @@ use std::error::Error;
 const GMAIL_MESSAGES_LIMIT: u32 = 30;
 
 pub async fn get_gmail_client() -> Result<Gmail<HttpsConnector<HttpConnector>>, Box<dyn Error>> {
-    let authorized_user_secret = read_authorized_user_secret("./token.json").await?;
+    let authorized_user_secret = read_authorized_user_secret("./token.json")
+        .await
+        .or_else(|err| Err(format!("Unable to parse gmail token secret ({})", err)))?;
 
     let auth = AuthorizedUserAuthenticator::builder(authorized_user_secret)
         .build()

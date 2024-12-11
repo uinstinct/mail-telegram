@@ -14,6 +14,7 @@ impl EnvVars {
     pub fn load_all_variables() -> Result<(), Box<dyn std::error::Error>> {
         // as to avoid writing all these variables in github workflow file, add a way to extract all these variables from a json string and fallback to extracting them manually if not all the variables are present in that json
         EnvVars::check_all_variables().unwrap_or_else(|_| {
+            println!("getting variables from .env file");
             dotenvy::dotenv().ok();
         });
         EnvVars::check_all_variables()?;
@@ -34,10 +35,7 @@ impl EnvVars {
     }
 
     fn write_token_json_into_file() {
-        std::fs::write("./token.json", std::env::var("GMAIL_TOKEN_JSON").unwrap_or_else(|_| {
-            println!("GMAIL_TOKEN_JSON is not set");
-            "".to_string()
-        })).unwrap_or_else(|_| {
+        std::fs::write("./token.json", std::env::var("GMAIL_TOKEN_JSON").unwrap()).unwrap_or_else(|_| {
             println!("Failed to write token.json");
         });
     }
