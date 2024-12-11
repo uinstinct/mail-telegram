@@ -17,7 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: browser-actions/setup-chrome@v1
-      - run: echo ${#DATABASE_URL}
+      - run: echo ${#ABC}
+        env:
+          ABC: ${{ secrets.DATABASE_URL }}
+      - run: echo ${#JAKE}
+        env:
+          JAKE: ${{ secrets.GITHUB_TOKEN }}
       - run: echo ${#TELEGRAM_BOT_TOKEN}
       - uses: dtolnay/rust-toolchain@stable
       - run: RUST_BACKTRACE=1 cargo run
