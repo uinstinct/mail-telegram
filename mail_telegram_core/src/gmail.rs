@@ -10,7 +10,7 @@ use sea_orm::DatabaseConnection;
 use std::collections::BTreeSet;
 use std::error::Error;
 
-const GMAIL_MESSAGES_LIMIT: u32 = 30;
+const GMAIL_MESSAGES_LIMIT: u32 = 100;
 
 pub async fn get_gmail_client() -> Result<Gmail<HttpsConnector<HttpConnector>>, Box<dyn Error>> {
     let authorized_user_secret = read_authorized_user_secret("./token.json")
