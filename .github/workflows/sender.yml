@@ -3,7 +3,8 @@ name: Send Mails to Telegram
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: "30 2 * * *"
+    - cron: "30 8 * * *"
     
 jobs:
   send:
